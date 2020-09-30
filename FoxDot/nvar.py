@@ -25,7 +25,3 @@ def nvar(values: (Pattern, list), durations: (Pattern, list)):
     for timevar in timevars:
         result_var += timevar
     return result_var
-
-
-# Example
-s1 >> play('S', dur=0.25, shape=nvar([0, 1, var([1, 0], 0.5), expvar([2, 0], [8, 0])], 8))
