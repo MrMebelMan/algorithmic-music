@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # This is an OSC proxy server that receives FoxDot OSC bundles,
 # serializes them into a dictionary and sends to VCV Rack cvOSCcv module.
 
