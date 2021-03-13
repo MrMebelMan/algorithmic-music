@@ -26,11 +26,9 @@ def foxdot_handler(addr, *args):
     # so we need a way to tell which player goes to which address.
     # In this case, sample number decides which address to use.
     if args_dict['sample'] == 0:
-        client.send_message("/kick_rate", args_dict['rate'])
-        client.send_message("/kick_sus", args_dict['sus'])
+        client.send_message("/kick", args_dict['rate'])
     elif args_dict['sample'] == 1:
-        client.send_message("/hihat_rate", args_dict['rate'])
-        client.send_message("/hihat_sus", args_dict['sus'])
+        client.send_message("/hihat", args_dict['rate'])
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
