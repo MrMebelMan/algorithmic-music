@@ -7,9 +7,11 @@ from pythonosc import osc_server
 from pythonosc import udp_client
 
 # Client will send OSC messages to VCV Rack
-client = udp_client.SimpleUDPClient("127.0.0.1", 7002)
+client = None
 
 def foxdot_handler(addr, *args):
+    global client
+
     # 'play1' is the name of FoxDot's sample player, but you can use any synth name here, like "pluck"
     if args[0] != 'play1':
         return
@@ -31,17 +33,22 @@ def foxdot_handler(addr, *args):
         client.send_message("/hihat", args_dict['rate'])
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
-  parser.add_argument("--ip", default="127.0.0.1", help="The ip to listen on")
-  parser.add_argument("--port", type=int, default=7001, help="The port to listen on")
-  args = parser.parse_args()
-
-  dispatcher = dispatcher.Dispatcher()
-  dispatcher.map("/s_new", foxdot_handler)
-
-  # Server will receive messages from FoxDot and decode them using "foxdot_handler" function
-  server = osc_server.ThreadingOSCUDPServer((args.ip, args.port), dispatcher)
-
-  print("Serving on {}".format(server.server_address))
-  server.serve_forever()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--server-ip", default="127.0.0.1", help="The ip to listen on")
+    parser.add_argument("--client-ip", default="127.0.0.1", help="The ip to forward messages to")
+    parser.add_argument("--server-port", type=int, default=7001, help="The port to listen on")
+    parser.add_argument("--client-port", type=int, default=7002, help="The port to forward messages to")
+    args = parser.parse_args()
+    
+    dispatcher = dispatcher.Dispatcher()
+    dispatcher.map("/s_new", foxdot_handler)
+    
+    # Server will receive messages from FoxDot and decode them using "foxdot_handler" function
+    server = osc_server.ThreadingOSCUDPServer((args.server_ip, args.server_port), dispatcher)
+    client = udp_client.SimpleUDPClient(args.client_ip, args.client_port)
+    
+    print("Serving on %s:%s\nForwarding messages to %s:%s\n" % 
+        (args.server_ip, args.server_port, args.client_ip, args.client_port)
+    )
+    server.serve_forever()
 
